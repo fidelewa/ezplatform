@@ -67,7 +67,11 @@ $request = Request::createFromGlobals();
 // If you are behind one or more trusted reverse proxies, you might want to set them in SYMFONY_TRUSTED_PROXIES environment
 // variable in order to get correct client IP
 if ($trustedProxies = getenv('SYMFONY_TRUSTED_PROXIES')) {
-    Request::setTrustedProxies(explode(',', $trustedProxies));
+    if ($trustedProxies === 'TRUST_ALL') {
+        Request::setTrustedProxies(array('127.0.0.1', $request->server->get('REMOTE_ADDR')));
+    } else {
+        Request::setTrustedProxies(explode(',', $trustedProxies));
+    }
 }
 
 $response = $kernel->handle($request);
